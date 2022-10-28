@@ -20,4 +20,4 @@ The command interpreter referred to as the console helps to manage the objects o
 - Destroy an object
     
 ## Contributors
-Contributors to the project are Warren Mulubi and Atom Data also stated in the AUTHORS file.
+Contributors to the project are Warren Mulubi and Tom Alata also stated in the AUTHORS file.
