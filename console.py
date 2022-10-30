@@ -2,8 +2,11 @@
 """ console """
 
 import cmd
+import sys
+import json
+import os
 from datetime import datetime
-import models
+from models import storage
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -13,17 +16,18 @@ from models.state import State
 from models.user import User
 import shlex  # for splitting the line along spaces except in double quotes
 
-classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
-           "Place": Place, "Review": Review, "State": State, "User": User}
-
 
 class HBNBCommand(cmd.Cmd):
     """ HBNH console """
     prompt = '(hbnb) '
+      classes = {'BaseModel': BaseModel, 'User': User, 'City': City,
+               'Place': Place, 'Amenity': Amenity, 'Review': Review,
+               'State': State}
 
     def do_EOF(self, arg):
         """Exits console"""
-        return True
+        print('')
+        exit()
 
     def emptyline(self):
         """ overwriting the emptyline method """
@@ -31,7 +35,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
-        return True
+        exit()
 
     def _key_value_parser(self, args):
         """creates a dictionary from a list of strings"""
