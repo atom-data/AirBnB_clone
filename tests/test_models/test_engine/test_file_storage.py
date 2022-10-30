@@ -5,6 +5,7 @@ Contains the TestFileStorageDocs classes
 
 from datetime import datetime
 import inspect
+import models
 from models.engine import file_storage
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -54,9 +55,9 @@ test_file_storage.py'])
     def test_file_storage_class_docstring(self):
         """Test for the FileStorage class docstring"""
         self.assertIsNot(FileStorage.__doc__, None,
-                         "State class needs a docstring")
+                         "FileStorage class needs a docstring")
         self.assertTrue(len(FileStorage.__doc__) >= 1,
-                        "State class needs a docstring")
+                        "FileStorage class needs a docstring")
 
     def test_fs_func_docstrings(self):
         """Test for the presence of docstrings in FileStorage methods"""
@@ -69,6 +70,7 @@ test_file_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_all_returns_dict(self):
         """Test that all returns the FileStorage.__objects attr"""
         storage = FileStorage()
@@ -76,6 +78,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertEqual(type(new_dict), dict)
         self.assertIs(new_dict, storage._FileStorage__objects)
 
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_new(self):
         """test that new adds an object to the FileStorage.__objects attr"""
         storage = FileStorage()
@@ -91,9 +94,9 @@ class TestFileStorage(unittest.TestCase):
                 self.assertEqual(test_dict, storage._FileStorage__objects)
         FileStorage._FileStorage__objects = save
 
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
-        os.remove("file.json")
         storage = FileStorage()
         new_dict = {}
         for key, value in classes.items():
@@ -110,41 +113,3 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
-
-    def test_reload(self):
-        """ check reload classes """
-        obj = BaseModel()
-        obj_key = 'BaseModel' + '.' + obj.id
-        obj1 = User()
-        obj1_key = 'User' + '.' + obj1.id
-        obj2 = City()
-        obj2_key = 'City' + '.' + obj2.id
-        obj3 = Amenity()
-        obj3_key = 'Amenity' + '.' + obj3.id
-        obj4 = Place()
-        obj4_key = 'Place' + '.' + obj4.id
-        obj5 = Review()
-        obj5_key = 'Review' + '.' + obj5.id
-        obj6 = State()
-        obj6_key = 'State' + '.' + obj6.id
-        storage.save()
-
-        self.assertTrue(path.isfile('file.json'))
-        FileStorage._FileStorage__objects = {}
-
-        storage.reload()
-
-        self.assertTrue(obj_key in storage.all().keys())
-        self.assertEqual(obj.id, storage.all()[obj_key].id)
-        self.assertTrue(obj1_key in storage.all().keys())
-        self.assertEqual(obj1.id, storage.all()[obj1_key].id)
-        self.assertTrue(obj2_key in storage.all().keys())
-        self.assertEqual(obj2.id, storage.all()[obj2_key].id)
-        self.assertTrue(obj3_key in storage.all().keys())
-        self.assertEqual(obj3.id, storage.all()[obj3_key].id)
-        self.assertTrue(obj4_key in storage.all().keys())
-        self.assertEqual(obj4.id, storage.all()[obj4_key].id)
-        self.assertTrue(obj5_key in storage.all().keys())
-        self.assertEqual(obj5.id, storage.all()[obj5_key].id)
-        self.assertTrue(obj6_key in storage.all().keys())
-        self.assertEqual(obj6.id, storage.all()[obj6_key].id)
