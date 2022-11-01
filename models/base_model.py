@@ -3,12 +3,8 @@
 File: base_model.py
 """
 import uuid
-import datetime
+from datetime import datetime
 import models
-# import storage
-# from datetime import datetime
-# import models
-# BaseModel = models.base_model.BaseModel
 
 
 class BaseModel:
@@ -26,30 +22,25 @@ class BaseModel:
         Return:
             None
         """
-        format = "%Y-%m-%dT%H:%M:%S.%f"
         self.id = str(uuid.uuid4())
-        self.created_at = datetime.datetime.now()
-        self.updated_at = self.created_at
-        if len(args):
-            print("base_model.py: Should have zero args to __init__()")
-            return
-        for key in kwargs:
-            if key == "id":
-                self.id = kwargs.get("id")
-                continue
-            if key == "created_at":
-                self.created_at = datetime.datetime.strptime(
-                    kwargs["created_at"], format)
-                continue
-            if key == "updated_at":
-                self.updated_at = datetime.datetime.strptime(
-                    kwargs["updated_at"], format)
-                continue
-            if key == "__class__":
-                continue
-            setattr(self, key,  kwargs[key])
-        models.storage.new(self)
-        models.storage.save()
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
+        if kwargs:
+            for key, v in kwargs.items():
+                if key == 'created_at':
+                    self.created_at = datetime.strptime(
+                        v,
+                        '%Y-%m-%dT%H:%M:%S.%f')
+                elif key == 'updated_at':
+                    self.updated_at = datetime.strptime(
+                        v,
+                        '%Y-%m-%dT%H:%M:%S.%f')
+                elif key == '__class__':
+                    self.__class__.__name__ = v
+                else:
+                    setattr(self, key, v)
+        else:
+            models.storage.new(self)
 
     def __str__(self):
         """
@@ -71,7 +62,8 @@ class BaseModel:
         Return:
             None
         """
-        self.updated_at = datetime.datetime.now()
+        self.updated_at = datetime.now()
+        models.storage.new(self)
         models.storage.save()
 
     def to_dict(self):
@@ -83,10 +75,11 @@ class BaseModel:
             entire copy of dictionary instance and must stringify some
             JSON modifications
         """
-        d = self.__dict__.copy()
-        d['__class__'] = self.__class__.__name__
-
-        format = "%Y-%m-%dT%H:%M:%S.%f"
-        d['created_at'] = str(self.__dict__['created_at'].strftime(format))
-        d['updated_at'] = str(self.__dict__['updated_at'].strftime(format))
-        return d
+        a = {}
+        for key, v in self.__dict__.items():
+            if key != 'created_at' and key != 'updated_at':
+                a[key] = v
+        a['__class__'] = self.__class__.__name__
+        a['created_at'] = self.created_at.isoformat()
+        a['updated_at'] = self.updated_at.isoformat()
+        return a

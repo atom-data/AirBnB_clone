@@ -1,29 +1,28 @@
 #!/usr/bin/python3
 """class Filestorage"""
 import json
+from models.amenity import Amenity
+from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import
+
+classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
+        "Place": Place, "Review": Review, "State": State, "User": User}
 
 
 class FileStorage:
-    """class FileStorage"""
+    """class FileStorage that serializes instances to a JSON file and 
+    deserializes back to instances"""
+
     __file_path = "file.json"
     __objects = {}
-    __count = {'BaseModel': 0, 'User': 0, 'State': 0,
-               'City': 0, 'Amenity': 0, 'Place': 0,
-               'Review': 0}
-
-    def count(self):
-        """return objcount"""
-        return self.__count
-
+ 
     def all(self):
-        """
-        all - returns the dictionary __objects
-        Args:
-            None
-        Return:
-            None
-        """
-        return self.__objects
+        """all - returns the dictionary __objects"""
+        return FileStorage.__objects
 
     def new(self, obj):
         """
@@ -33,7 +32,9 @@ class FileStorage:
         Return:
             None
         """
-        self.__objects[obj.__class__.__name__ + "." + str(obj.id)] = obj
+        if obj is not None:
+            key = obj.__class__.__name__ + "." + str(obj.id)
+            FileStorage.__objects[key] = obj
 
     def save(self):
         """
@@ -43,12 +44,12 @@ class FileStorage:
         Return:
             None
         """
-        js = {}
-        for k in self.__objects:
-            js[k] = self.__objects[k].to_dict()
-        js = json.dumps(js)
-        with open(self.__file_path, "w") as jsf:
-            jsf.write(js)
+        with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
+            json_objects = {}
+            for key, v in FileStorage.__objects.items():
+                json_objects[key] = v.to_dict()
+            j = json.dumps(a)
+            f.write(j)
 
     def reload(self):
         """
@@ -58,24 +59,13 @@ class FileStorage:
         Return:
             None
         """
-        from models.base_model import BaseModel
-        from models.user import User
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.place import Place
-        from models.review import Review
-        classesD = {'BaseModel': BaseModel, 'User': User, 'State': State,
-                    'City': City, 'Amenity': Amenity, 'Place': Place,
-                    'Review': Review}
         try:
-            with open(self.__file_path, "r") as jsf:
-                js = jsf.read()
-            js = json.loads(js)
-            for key in js:
-                name = key.split(".")[0]
-                if name in classesD:
-                    self.__objects[key] = classesD[name](**js[key])
-                    self.__count[name] += 1
-        except Exception:
-            return
+            with open(FileStorage.__file_path, "r") as f:
+                data = json.load(f)
+                for v in data.values():
+                    my_cl = v["__class__"]
+                    my_cl = eval(my_cl)
+                    obj = my_cl(**v)
+                    self.new(obj)
+        except:
+            pass
