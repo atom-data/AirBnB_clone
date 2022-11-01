@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-""" holds class State"""
+"""class state"""
 from models.base_model import BaseModel
 
 
 class State(BaseModel):
-    """Representation of state """
-    name = ""
-
+    """Class State"""
     def __init__(self, *args, **kwargs):
-        """initializes state"""
+        """class constructor"""
+        self.name = kwargs.pop('name', "")
         super().__init__(*args, **kwargs)

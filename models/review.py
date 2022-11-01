@@ -1,14 +1,14 @@
 #!/usr/bin/python3
-""" holds class Review"""
+"""class Review"""
 from models.base_model import BaseModel
 
 
 class Review(BaseModel):
-    """Representation of Review """
-    place_id = ""
-    user_id = ""
-    text = ""
+    """class Review"""
 
     def __init__(self, *args, **kwargs):
-        """initializes Review"""
+        """class constructon"""
+        self.place_id = kwargs.pop('place_id', "")
+        self.user_id = kwargs.pop('user_id', "")
+        self.text = kwargs.pop('text', "")
         super().__init__(*args, **kwargs)

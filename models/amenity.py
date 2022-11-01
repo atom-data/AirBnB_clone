@@ -1,13 +1,11 @@
 #!/usr/bin/python3
-""" holds class Amenity"""
-import models
-from models.base_model import BaseModel, Base
+"""class Amenity"""
+from models.base_model import BaseModel
 
 
-class Amenity(BaseModel, Base):
-    """Representation of Amenity """
-    name = ""
-
+class Amenity(BaseModel):
+    """class Amenity"""
     def __init__(self, *args, **kwargs):
-        """initializes Amenity"""
+        """class constructon"""
+        self.name = kwargs.pop('name', "")
         super().__init__(*args, **kwargs)
